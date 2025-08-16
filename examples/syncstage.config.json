@@ -1,0 +1,10 @@
+{
+  "roots": [
+    "C:/Users/you/OneDrive",
+    "/Users/you/Library/CloudStorage/GoogleDrive-your@email.com/My Drive"
+  ],
+  "ignore": [".DS_Store","._*","Thumbs.db","desktop.ini","~$*","*.tmp",".Trash/**","**/.git/**"],
+  "organize": { "destination": "{root}/Organized", "by": "date_ext", "date_format": "%Y/%m", "lowercase_ext": true },
+  "mirror":   { "checksum": false, "delete_extraneous": false },
+  "dedupe":   { "algorithm": "blake2b", "block_size": 1048576 }
+}

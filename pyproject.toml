@@ -1,0 +1,15 @@
+[project]
+name = "syncstage"
+version = "0.1.0"
+description = "Manage files inside local OneDrive/Google Drive folders (no cloud APIs)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Your Name", email = "you@example.com" }]
+
+[project.scripts]
+syncstage = "syncstage.cli:main"
+
+[build-system]
+requires = ["setuptools>=67"]
+build-backend = "setuptools.build_meta"
