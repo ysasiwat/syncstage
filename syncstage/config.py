@@ -30,6 +30,7 @@ def load_config(path: Optional[Path]) -> dict:
     if not path.exists():
         print(f"[warn] config not found at {path}; using defaults")
         return DEFAULT_CONFIG.copy()
+    
     with path.open("r", encoding="utf-8") as f:
         user = json.load(f)
 
@@ -43,5 +44,6 @@ def load_config(path: Optional[Path]) -> dict:
                 merge(a[k], v)
             else:
                 a[k] = v
+                
     merge(cfg, user)
     return cfg

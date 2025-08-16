@@ -12,7 +12,6 @@ from ..utils import (
 )
 
 from ..translate import translate_cached
-import os
 
 
 def _format_with_dates(

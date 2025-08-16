@@ -7,6 +7,7 @@ from .commands import scan, organize, dedupe, clean, mirror, verify, rename
 
 
 def build_parser() -> argparse.ArgumentParser:
+    # Create the main argument parser
     p = argparse.ArgumentParser(
         prog="syncstage",
         description="Manage files inside local OneDrive/Google Drive folders (no cloud APIs).",
@@ -22,16 +23,20 @@ def build_parser() -> argparse.ArgumentParser:
         "--apply", action="store_true", help="Apply changes (default is dry-run)."
     )
 
+    # Add subparsers for commands
     sub = p.add_subparsers(dest="cmd", required=True)
 
+    # scan command
     sc = sub.add_parser("scan", help="Inventory & quick duplicate report.")
     sc.add_argument("--show-dupes", action="store_true", help="List duplicate groups.")
 
+    # organize command
     org = sub.add_parser(
         "organize", help="Organize into YYYY/MM/<ext>/ under an 'Organized' area."
     )
     # uses global --apply
 
+    # dedupe command
     dd = sub.add_parser(
         "dedupe", help="Find duplicates; delete or hardlink duplicates to a keeper."
     )
@@ -41,11 +46,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Replace dupes with hardlinks to keeper (same volume only).",
     )
 
+    # clean command
     cl = sub.add_parser("clean", help="Remove OS junk and optional empty directories.")
     cl.add_argument(
         "--prune-empty", action="store_true", help="Prune empty directories."
     )
 
+    # mirror command
     mi = sub.add_parser(
         "mirror", help="Mirror a source folder into a target within a sync root."
     )
@@ -60,6 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--delete", action="store_true", help="Delete extraneous files in target."
     )
 
+    # verify command
     ve = sub.add_parser(
         "verify", help="Write or check a checksum manifest for a folder."
     )
@@ -72,12 +80,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     ve.add_argument("--algo", choices=["blake2b", "sha256"], help="Hash algorithm.")
 
+    # rename command
     rn = sub.add_parser(
         "rename", help="Rename files (and optionally directories) using a template."
     )
     rn.add_argument(
         "--template",
-        default="{created:%Y-%m-%d} {stem}{ext}",
+        default="{created:%Y%m%d} {stem}{ext}",
         help="Tokens: {created:%%fmt}, {modified:%%fmt}, {stem}, {ext}, {parent}, {counter}. "
         "Default: '{created:%Y-%m-%d} {stem}{ext}'",
     )
@@ -143,7 +152,6 @@ def build_parser() -> argparse.ArgumentParser:
             "If provided and current filename matches this prefix, the tool will skip."
         ),
     )
-
     # Translation (true translation, not transliteration)
     rn.add_argument(
         "--translate",

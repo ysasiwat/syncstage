@@ -1,30 +1,50 @@
 {
-    "roots": [
-        "C:/Users/you/OneDrive",
-        "/Users/you/Library/CloudStorage/GoogleDrive-your@email.com/My Drive"
-    ],
-    "ignore": [
-        ".DS_Store",
-        "._*",
-        "Thumbs.db",
-        "desktop.ini",
-        "~$*",
-        "*.tmp",
-        ".Trash/**",
-        "**/.git/**"
-    ],
-    "organize": {
-        "destination": "{root}/Organized",
-        "by": "date_ext",
-        "date_format": "%Y/%m",
-        "lowercase_ext": true
-    },
-    "mirror": {
-        "checksum": false,
-        "delete_extraneous": false
-    },
-    "dedupe": {
-        "algorithm": "blake2b",
-        "block_size": 1048576
-    }
+  "roots": [
+    "C:/Users/you/OneDrive",
+    "/Users/you/Library/CloudStorage/GoogleDrive-your@email.com/My Drive"
+  ],
+
+  "ignore": [
+    ".DS_Store",
+    "._*",
+    "Thumbs.db",
+    "desktop.ini",
+    "~$*",
+    "*.tmp",
+    ".Trash/**",
+    "**/.git/**"
+  ],
+
+  "organize": {
+    "destination": "{root}/Organized",
+    "by": "date_ext",
+    "date_format": "%Y/%m",
+    "lowercase_ext": true
+  },
+
+  "mirror": {
+    "checksum": false,
+    "delete_extraneous": false
+  },
+
+  "dedupe": {
+    "algorithm": "blake2b",
+    "block_size": 1048576
+  },
+
+  "rename": {
+    "template": "{created:%Y-%m-%d} {stem}{ext}",
+
+    "case": "title",
+    "keep_symbols": false,
+    "keep_underscores": false,
+    "convert_dashes": true,
+
+    "skip_if_already": true,
+    "idempotent_prefix": true,
+
+    "translate": "th-en",
+    "translate_provider": "googletrans",
+    "translate_cache": ".cache/syncstage-translate.json"
+  }
 }
