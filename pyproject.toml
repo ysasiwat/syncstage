@@ -13,3 +13,7 @@ syncstage = "syncstage.cli:main"
 [build-system]
 requires = ["setuptools>=67"]
 build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+translate = ["googletrans==4.0.0rc1"]
+gcloud = ["google-cloud-translate>=2.0.0"]

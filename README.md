@@ -19,9 +19,14 @@ No cloud APIs. The native sync clients do the uploading.
 git clone https://github.com/ysasiwat/syncstage.git
 cd syncstage
 pip install -e .
+# googletrans
+pip install -e ".[translate]"
+# or Google Cloud Translate
+pip install -e ".[gcloud]"
 ```
 
-## Basic usage
+## Basic Usage
+
 ```bash
 # 1. Scan a OneDrive folder and show duplicate groups
 syncstage --root "C:/Users/you/OneDrive" scan --show-dupes
@@ -31,19 +36,36 @@ syncstage -c examples/syncstage.config.json --apply organize
 
 # 3. Rename files to prepend created date + smart capitalization
 syncstage --root "/path/to/GoogleDrive/My Drive" --apply rename \
-    --template "{created:%Y-%m-%d} {stem}{ext}"
+  --template "{created:%Y-%m-%d} {stem}{ext}"
 
-# 4. Remove duplicates (delete or replace with hardlinks)
+# 4. Rename with idempotency (default: skip if already renamed)
+# Example: "Report.docx" → "2025-08-16 Report.docx"
+# Running again will SKIP instead of "2025-08-16 2025-08-16 Report.docx"
+syncstage --root "/path" --apply rename \
+  --template "{created:%Y-%m-%d} {stem}{ext}"
+
+# 5. Rename with custom prefix detection (regex for "already renamed")
+# e.g. skip files that already start with an 8-digit date
+syncstage --root "/path" --apply rename \
+  --template "{created:%d%m%Y} {stem}{ext}" \
+  --idempotent-prefix '^\d{8}[ _-]'
+
+# 6. Force re-rename even if names look idempotent
+syncstage --root "/path" --apply rename \
+  --template "{created:%Y-%m-%d} {stem}{ext}" \
+  --no-skip-if-already
+
+# 7. Remove duplicates (delete or replace with hardlinks)
 syncstage --root "/path/OneDrive" --apply dedupe
 syncstage --root "/path/OneDrive" --apply dedupe --hardlink
 
-# 5. Clean junk and prune empty directories
+# 8. Clean junk and prune empty directories
 syncstage --root "/path/Drive" --apply clean --prune-empty
 
-# 6. Mirror a folder into a sync root
+# 9. Mirror a folder into a sync root
 syncstage --apply mirror "/data/photos" "C:/Users/you/OneDrive/Photos"
 
-# 7. Write and verify checksum manifest
+# 10. Write and verify checksum manifest
 syncstage verify --root "/path/Drive/Projects" --write --apply
 syncstage verify --root "/path/Drive/Projects" --manifest MANIFEST-20250305.blake2b.txt
 ```
@@ -62,6 +84,24 @@ You can use tokens in rename templates:
 syncstage --root "/path/Drive" --apply rename \
   --template "{created:%Y-%m-%d} {stem}{ext}" \
   --ext-case lower
+```
+## Translate filenames (Thai → English)
+
+Requires one of the optional extras:
+- `pip install -e ".[translate]"` for `googletrans`
+- or `pip install -e ".[gcloud]"` and set `GOOGLE_APPLICATION_CREDENTIALS` for Google Cloud
+
+```bash
+# Thai → English using googletrans (no API key)
+syncstage --root "/path" --apply rename \
+  --template "{created:%Y-%m-%d} {stem}{ext}" \
+  --translate th-en --translate-provider googletrans
+
+# Thai → English using Google Cloud Translate (needs creds)
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your-service-account.json
+syncstage --root "/path" --apply rename \
+  --template "{created:%Y-%m-%d} {stem}{ext}" \
+  --translate th-en --translate-provider gcloud
 ```
 
 ## Config file
