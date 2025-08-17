@@ -8,4 +8,5 @@ dist/
 build/
 *.egg-info/
 MANIFEST-*.txt
+.cache
 examples/ys.config.json
