@@ -7,9 +7,6 @@ from pathlib import Path
 from .config import load_config
 from .commands import scan, organize, dedupe, clean, mirror, verify, rename
 
-# ---------------------------------------------------------------------------
-# Parser
-# ---------------------------------------------------------------------------
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -66,118 +63,30 @@ def build_parser() -> argparse.ArgumentParser:
 
     # --- rename ---
     rn = sub.add_parser("rename", help="Rename files (and optionally directories) using a template.")
-    rn.add_argument(
-        "--template",
-        default="{created:%Y-%m-%d} {stem}{ext}",
-        help=("Tokens: {created:%%fmt}, {modified:%%fmt}, {stem}, {ext}, {parent}, {counter}. "
-              "Default: '{created:%Y-%m-%d} {stem}{ext}'"),
-    )
-    rn.add_argument("--pad", default="2", help="Zero-pad width for collision counter (default 2).")
-    rn.add_argument("--include-dirs", action="store_true", help="Also rename directories.")
-    rn.add_argument("--no-sanitize", action="store_true", help="Disable filename sanitization.")
-    rn.add_argument(
-        "--keep-ext",
-        action="store_true",
-        help="Do not auto-append original extension when {ext} is missing.",
-    )
-    rn.add_argument(
-        "--case",
-        choices=["smart", "title", "lower", "upper", "keep"],
-        default="smart",
-        help="Casing for the filename (without extension). Default: smart.",
-    )
-    rn.add_argument(
-        "--ext-case",
-        choices=["keep", "lower", "upper"],
-        default="keep",
-        help="Casing for the extension. Default: keep.",
-    )
-    rn.add_argument(
-        "--keep-symbols",
-        action="store_true",
-        help='Do NOT strip symbols like _ " \' ? (keeps them).',
-    )
-    rn.add_argument(
-        "--keep-underscores",
-        action="store_true",
-        help="Do NOT convert underscores to spaces.",
-    )
-    rn.add_argument(
-        "--convert-dashes",
-        action="store_true",
-        help="Convert '-' to spaces too.",
-    )
-    rn.add_argument(
-        "--sanitize-mode",
-        choices=["drop", "underscore"],
-        default="drop",
-        help="How to handle OS-invalid characters; default: drop.",
-    )
-
-    # Idempotency controls
-    rn.add_argument(
-        "--no-skip-if-already",
-        dest="skip_if_already",
-        action="store_false",
-        help="Do not skip files that already match the target name (default: skip).",
-    )
-    rn.set_defaults(skip_if_already=True)
-    rn.add_argument(
-        "--idempotent-prefix",
-        help=("Regex for a leading prefix that indicates the file was already renamed "
-              "(e.g., '^(\\d{8})[ _-]' for 8-digit dates). "
-              "If omitted, a heuristic prefix guard is used."),
-    )
-
-    # Translation (true translation, optional extras)
-    rn.add_argument(
-        "--translate",
-        choices=["th-en"],
-        help="Translate filename stems before normalization. Example: th-en (Thai → English).",
-    )
-    rn.add_argument(
-        "--translate-provider",
-        choices=["googletrans", "gcloud"],
-        default="googletrans",
-        help="Translation backend: 'googletrans' (no key) or 'gcloud' (Google Cloud credentials).",
-    )
-    rn.add_argument(
-        "--translate-cache",
-        type=Path,
-        help="Path to a JSON cache for translations to avoid repeated calls (optional).",
-    )
-
-    # Plan I/O + post-processing
-    rn.add_argument(
-        "--plan-out",
-        type=Path,
-        help="Write a CSV plan of proposed renames: old_path,new_name (no changes applied).",
-    )
-    rn.add_argument(
-        "--plan-in",
-        type=Path,
-        help="Read a CSV plan (old_path,new_name) and perform exactly those renames.",
-    )
-    rn.add_argument(
-        "--sub",
-        nargs=2,
-        action="append",
-        metavar=("PATTERN", "REPL"),
-        help="Post-process proposed names with a substring replace. Repeatable.",
-    )
-    rn.add_argument(
-        "--re",
-        nargs=2,
-        action="append",
-        metavar=("REGEX", "REPL"),
-        help="Post-process proposed names with a regex substitution. Repeatable.",
-    )
+    # defaults = None so config can supply values
+    rn.add_argument("--template", default=None, help="Rename template.")
+    rn.add_argument("--pad", default=None, help="Zero-pad width (default 2).")
+    rn.add_argument("--include-dirs", action="store_true", default=None, help="Also rename directories.")
+    rn.add_argument("--no-sanitize", action="store_true", default=None, help="Disable filename sanitization.")
+    rn.add_argument("--keep-ext", action="store_true", default=None, help="Keep original extension if {ext} missing.")
+    rn.add_argument("--case", choices=["smart", "title", "lower", "upper", "keep"], default=None)
+    rn.add_argument("--ext-case", choices=["keep", "lower", "upper"], default=None)
+    rn.add_argument("--keep-symbols", action="store_true", default=None)
+    rn.add_argument("--keep-underscores", action="store_true", default=None)
+    rn.add_argument("--convert-dashes", action="store_true", default=None)
+    rn.add_argument("--sanitize-mode", choices=["drop", "underscore"], default=None)
+    rn.add_argument("--no-skip-if-already", dest="skip_if_already", action="store_false", default=None)
+    rn.add_argument("--idempotent-prefix", default=None)
+    rn.add_argument("--translate", choices=["th-en"], default=None)
+    rn.add_argument("--translate-provider", choices=["googletrans", "gcloud"], default=None)
+    rn.add_argument("--translate-cache", type=Path, default=None)
+    rn.add_argument("--plan-out", type=Path, default=None)
+    rn.add_argument("--plan-in", type=Path, default=None)
+    rn.add_argument("--sub", nargs=2, action="append", default=None)
+    rn.add_argument("--re", nargs=2, action="append", default=None)
 
     return p
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main(argv=None) -> int:
     parser = build_parser()
